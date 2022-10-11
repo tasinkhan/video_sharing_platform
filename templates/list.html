@@ -11,10 +11,29 @@ Video Sharing Platform
             <h3 class="text-xs-center">Videos</h3>
             <div class="row pb-row">
                 {% for video in videos %}
-                <div class="col-md-3 pb-video">
-                    <iframe class="pb-video-frame" width="100%" height="230" src="{{video.url}}" frameborder="0" allowfullscreen></iframe>
-                    <label class="form-control label-warning text-xs-center">{{ video.title }}</label>
+                    <div class="col-md-3 pb-video">
+                        <iframe class="pb-video-frame" width="100%" height="230" src="{{video.url}}" frameborder="0" allowfullscreen></iframe>
+                        <label class="form-control label-warning text-xs-center">{{ video.title }}</label>
                         <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#videodetails_{{video.id}}">Details</button>
+                        {% if request.user in video.like.user.all %}
+                            <form method="POST" action="{% url 'video:like_video' video.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Liked({{ video.get_total_likes }})</button>
+                            </form>
+                            
+                        {% else %}
+                        <form method="POST" action="{% url 'video:like_video' video.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Like({{ video.get_total_likes }})</button>
+                        </form>
+                        
+                        {% endif %}
+
+                        {% if request.user in video.dislike.user.all %}
+                            <button type="submit" class="btn btn-danger">Disliked({{ video.get_total_dislikes }})</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Dislike({{ video.get_total_dislikes }})</button>
+                        {% endif %}
                         <div class="modal fade" id="videodetails_{{video.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
@@ -28,7 +47,7 @@ Video Sharing Platform
                                     <div class="row">
                                         <div class="col-md-6 mb-4">
                         
-                                          <h5>Added By: {{ video.added_by.first_name }}</h5>
+                                            <h5>Added By: {{ video.added_by.first_name }}</h5>
                         
                                         </div>
                                         <div class="col-md-6 mb-4">
@@ -40,23 +59,29 @@ Video Sharing Platform
                                             </div>
                         
                                         </div>
-                                      </div>
-                                      <div class="row">
+                                        </div>
+                                        <div class="row">
                                         <div class="col-md-6 mb-4">
                         
-                                          <h5>Watch Count: 0</h5>
+                                            <h5>Watch Count: 0</h5>
                         
                                         </div>
                                         <div class="col-md-6 mb-4">
                         
                                         <div class="col-md-6 mb-4">
-                    
-                                            <h5>Like Count: 0</h5>
+                                            
+                                            {% if request.user in video.like.user.all %}
+                                            You Liked
+                                            {% endif %}
+                                            {% if request.user in video.dislike.user.all %}
+                                            You disliked
+                                            {% endif %}
+                                            <h5>Like Count: {{ video.get_total_likes }}</h5>
                             
                                             </div>
                         
                                         </div>
-                                      </div>
+                                        </div>
                                 </div>
                                 <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -64,32 +89,8 @@ Video Sharing Platform
                                 </div>
                             </div>
                             </div>
-                        </div>
-                    <!-- <form method="POST" action="{% url 'video:video_details' video.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Details</button>
-                    </form>
-                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                </div>
-                                <div class="modal-body">
-                                ...
-                                </div>
-                                <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                                </div>
-                            </div>
-                            </div>
-                        </div> -->
-                    
-                </div>
+                        </div>                    
+                    </div>
                 
                 {% endfor %}
 
