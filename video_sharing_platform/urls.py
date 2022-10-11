@@ -21,6 +21,7 @@ from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
+    path('video/', include('video.urls')),
     path('', index, name="homepage"),
 
 ]

@@ -3,6 +3,7 @@ from .models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import authenticate, login, logout
 import sweetify
+from video.models import Video
 # Create your views here.
 
 def login_page(request):
@@ -24,7 +25,7 @@ def login_view(request):
                 print(user, "=====================")
                 login(request,user)
                 sweetify.success(request, 'Login successful')
-                return render(request, "user_dashboard.html")
+                return redirect("users:dashboard")
             else:
                 sweetify.error(request, "email and password doesn't match!", persistent=':(')
                 return render(request, "login_page.html")
@@ -60,6 +61,17 @@ def logout_view(request):
     return render(request, 'login_page.html')
 
 
+def dashboard_view(request):
+    return render(request, "user_dashboard.html")
+
+def added_videos(request):
+    try:
+        queryset = Video.objects.filter(added_by = request.user)
+    except:
+        queryset = None
+    return render(request, "added_video_list.html", {"videos":queryset})
+
+    
 def test_view(request):
     sweetify.success(request, 'You did it', text='Good job! You successfully showed a SweetAlert message', persistent='Hell yeah')
     return redirect('/')

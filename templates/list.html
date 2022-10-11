@@ -3,16 +3,97 @@
 Video Sharing Platform
 {% endblock %}
 {% block content %}
+
 <body>
+    
     <div class="container-fluid pb-video-container">
         <div class="col-md-10 offset-md-1">
-            <h3 class="text-xs-center">Sample Video Gallery</h3>
+            <h3 class="text-xs-center">Videos</h3>
             <div class="row pb-row">
+                {% for video in videos %}
                 <div class="col-md-3 pb-video">
-                    <iframe class="pb-video-frame" width="100%" height="230" src="https://www.youtube.com/embed/K68UrdUOr2Y?list=RDzuAcaBkcYGE?ecver=1" frameborder="0" allowfullscreen></iframe>
-                    <label class="form-control label-warning text-xs-center">Claydee - Alena</label>
+                    <iframe class="pb-video-frame" width="100%" height="230" src="{{video.url}}" frameborder="0" allowfullscreen></iframe>
+                    <label class="form-control label-warning text-xs-center">{{ video.title }}</label>
+                        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#videodetails_{{video.id}}">Details</button>
+                        <div class="modal fade" id="videodetails_{{video.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">View details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                        
+                                          <h5>Added By: {{ video.added_by.first_name }}</h5>
+                        
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                        
+                                        <div class="col-md-6 mb-4">
+                    
+                                            <h5>Added At: {{ video.created_at }}</h5>
+                            
+                                            </div>
+                        
+                                        </div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col-md-6 mb-4">
+                        
+                                          <h5>Watch Count: 0</h5>
+                        
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                        
+                                        <div class="col-md-6 mb-4">
+                    
+                                            <h5>Like Count: 0</h5>
+                            
+                                            </div>
+                        
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    <!-- <form method="POST" action="{% url 'video:video_details' video.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Details</button>
+                    </form>
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                ...
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div> -->
+                    
                 </div>
-                <div class="col-md-3 pb-video">
+                
+                {% endfor %}
+
+                <!-- <div class="col-md-3 pb-video">
                     <iframe class="pb-video-frame" width="100%" height="230" src="https://www.youtube.com/embed/wjT2JVlUFY4?list=RDzuAcaBkcYGE?ecver=1" frameborder="0" allowfullscreen></iframe>
                     <label class="form-control label-warning text-xs-center">Manuel Riva - Mhm Mhm</label>
                 </div>
@@ -23,9 +104,9 @@ Video Sharing Platform
                 <div class="col-md-3 pb-video">
                     <iframe class="pb-video-frame" width="100%" height="230" src="https://www.youtube.com/embed/Y1_VsyLAGuk?list=RDzuAcaBkcYGE?ecver=1" frameborder="0" allowfullscreen></iframe>
                     <label class="form-control label-warning text-xs-center">Burak Yeter - Tuesday</label>
-                </div>
+                </div> -->
             </div> 
-            <div class="row pb-row">
+            <!-- <div class="row pb-row">
                 <div class="col-md-3 pb-video">
                     <iframe class="pb-video-frame" width="100%" height="230" src="https://www.youtube.com/embed/3eLcD7JqOfs" frameborder="0" allowfullscreen></iframe> 
                     <label class="form-control label-warning text-xs-center">Is this the next big thing?</label>
@@ -42,7 +123,7 @@ Video Sharing Platform
                     <iframe class="pb-video-frame" width="100%" height="230" src="https://www.youtube.com/embed/3CPBQaU8iUo" frameborder="0" allowfullscreen></iframe>
                     <label class="form-control label-warning text-xs-center">NEW Logitech G502 X Plus Mouse is Here!</label>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
     
