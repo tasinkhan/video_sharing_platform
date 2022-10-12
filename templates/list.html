@@ -13,17 +13,9 @@ Video Sharing Platform
             <div class="row pb-row ">
                 {% for video in videos %}
                 <div class="col-md-3 pb-video mb-2">
-                    <!-- {% video video.embded_video '510x315' %} -->
                     <div class="vid-div">
                         {% video video.embded_video '380x315' %}
-                    </div>
-                    <!-- <div class="ml-6">
-                        
-                
-                        {% video video.embded_video 'tiny' %}
-                
-                    </div> -->
-                    
+                    </div>                    
                     <label class="form-control label-warning text-xs-center">{{ video.title }}</label>
                     <div class="d-flex justify-content-center">
                         <div class="details-div mr-2">
@@ -31,16 +23,15 @@ Video Sharing Platform
                         </div>
                         <div class="like-div mr-2">
                             {% if request.user in video.like.user.all %}
-                            {{ video.id }}
-                            <a name="{{ video.id }}" data-url="{% url 'video:like_video' video.id %}" class="likin btn btn-success" id="co">Liked({{ video.get_total_likes }})</a>
+                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" class="liking btn btn-success" id="co">Liked({{ video.get_total_likes }})</a>
                             <!-- <form method="POST" action="{% url 'video:like_video' video.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-success">Liked({{ video.get_total_likes }})</button>
                             </form> -->
                             
-                        {% else %}
-                        {{ video.id }}
-                        <a name="{{ video.id }}" data-url="{% url 'video:like_video' video.id %}" class="likin btn btn-primary" id="co">Like({{ video.get_total_likes }})</a>
+                            {% else %}
+                            {{ video.id }}
+                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" class="liking btn btn-primary" id="co">Like({{ video.get_total_likes }})</a>
                             <!-- <form method="POST" action="{% url 'video:like_video' video.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-primary">Like({{ video.get_total_likes }})</button>
@@ -50,14 +41,14 @@ Video Sharing Platform
                         </div>
                         <div class="dislike-div mr-2">
                             {% if request.user in video.dislike.user.all %}
-                            <a name="{{ video.id }}" class="dislikin btn btn-danger" id="co-3">Disliked({{ video.get_total_dislikes }})</a>
+                            <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" class="disliking btn btn-danger" id="co-3">Disliked({{ video.get_total_dislikes }})</a>
                             <!-- <form method="POST" action="{% url 'video:dislike_video' video.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Disliked({{ video.get_total_dislikes }})</button>
                             </form> -->
                             
                         {% else %}
-                        <a name="{{ video.id }}"  class="dislikin btn btn-primary" id="co-4">Dislike({{ video.get_total_dislikes }})</a>
+                        <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" class="disliking btn btn-primary" id="co-4">Dislike({{ video.get_total_dislikes }})</a>
 
                             <!-- <form method="POST" action="{% url 'video:dislike_video' video.id %}">
                                 {% csrf_token %}
@@ -89,38 +80,44 @@ Video Sharing Platform
                                         <h5>Added By: {{ video.added_by.first_name }}</h5>
                     
                                     </div>
-                                    <div class="col-md-6 mb-4">
                     
-                                    <div class="col-md-6 mb-4">
+                                        <div class="col-md-6 mb-4">
                 
-                                        <h5>Added At: {{ video.created_at }}</h5>
+                                            <h5>Added At: {{ video.created_at }}</h5>
                         
                                         </div>
                     
-                                    </div>
-                                    </div>
-                                    <div class="row">
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6 mb-4">
-                    
-                                        <h5>Watch Count: 0</h5>
-                    
-                                    </div>
-                                    <div class="col-md-6 mb-4">
-                    
-                                    <div class="col-md-6 mb-4">
-                                        
-                                        {% if request.user in video.like.user.all %}
-                                        You Liked
-                                        {% endif %}
-                                        {% if request.user in video.dislike.user.all %}
-                                        You disliked
-                                        {% endif %}
                                         <h5>Like Count: {{ video.get_total_likes }}</h5>
-                        
-                                        </div>
+                                    </div>
+                
+                                    <div class="col-md-6 mb-4">
+                                        <h5>Dislike Count: {{ video.get_total_dislikes }}</h5>
+                                    </div>
                     
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <h5>liked by: </h5>
+                                        {% for usr in video.like.user.all %}
+                                        {{ usr }}
+                                        {% endfor %}
                                     </div>
+                
+                                    <div class="col-md-6 mb-4">
+                                        <h5>Disliked by: </h5>
+                                        {% for usr in video.dislike.user.all %}
+                                        {{ usr }}
+                                        {% endfor %}
                                     </div>
+                    
+                                </div>
+
+
+                                
                             </div>
                             <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -130,111 +127,8 @@ Video Sharing Platform
                         </div>
                     </div>                    
                 </div>
-                    <!-- <div class="col-md-3 pb-video">
-                        <iframe class="pb-video-frame" width="100%" height="230" src="{{video.url}}" frameborder="0" allowfullscreen></iframe>
-                        <label class="form-control label-warning text-xs-center">{{ video.title }}</label>
-                        <div class="d-flex justify-content-center">
-                            <div class="details-div mr-2">
-                                <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#videodetails_{{video.id}}">Details</button>
-                            </div>
-                            <div class="like-div mr-2">
-                                {% if request.user in video.like.user.all %}
-                                <form method="POST" action="{% url 'video:like_video' video.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-success">Liked({{ video.get_total_likes }})</button>
-                                </form>
-                                
-                            {% else %}
-                            <form method="POST" action="{% url 'video:like_video' video.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Like({{ video.get_total_likes }})</button>
-                            </form>
-                            
-                            {% endif %}
-                            </div>
-                            <div class="dislike-div">
-                                {% if request.user in video.dislike.user.all %}
-                                <form method="POST" action="{% url 'video:dislike_video' video.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">Disliked({{ video.get_total_dislikes }})</button>
-                                </form>
-                                
-                            {% else %}
-                                <form method="POST" action="{% url 'video:dislike_video' video.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-primary">Dislike({{ video.get_total_dislikes }})</button>
-                                </form>
-                                
-                            {% endif %}
-                            </div>
-                        </div>
-                        
-                        
-                        <div class="modal fade" id="videodetails_{{video.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">View details</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-4">
-                        
-                                            <h5>Added By: {{ video.added_by.first_name }}</h5>
-                        
-                                        </div>
-                                        <div class="col-md-6 mb-4">
-                        
-                                        <div class="col-md-6 mb-4">
-                    
-                                            <h5>Added At: {{ video.created_at }}</h5>
-                            
-                                            </div>
-                        
-                                        </div>
-                                        </div>
-                                        <div class="row">
-                                        <div class="col-md-6 mb-4">
-                        
-                                            <h5>Watch Count: 0</h5>
-                        
-                                        </div>
-                                        <div class="col-md-6 mb-4">
-                        
-                                        <div class="col-md-6 mb-4">
-                                            
-                                            {% if request.user in video.like.user.all %}
-                                            You Liked
-                                            {% endif %}
-                                            {% if request.user in video.dislike.user.all %}
-                                            You disliked
-                                            {% endif %}
-                                            <h5>Like Count: {{ video.get_total_likes }}</h5>
-                            
-                                            </div>
-                        
-                                        </div>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                                </div>
-                            </div>
-                            </div>
-                        </div>                    
-                    </div> -->
-                
                 {% endfor %}
-
-                <!-- {% for vid in videos %}
-                    {% video vid.embded_video 'tiny' %}
-                {% endfor %} -->
             </div> 
-            
         </div>
     </div>
 
@@ -271,52 +165,30 @@ Video Sharing Platform
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-// AJAX CALL
-$('.likin').click(function(){
+// Like AJAX CALL
+$('.liking').click(function(){
     let url = $(this).attr('data-url');
     console.log(url);
-    // console.log("sdfj");
-    // let get_doc_id = document.getElementById("co");
-    // let name_ = get_doc_id.getAttribute("name")
-    // console.log(name_);
-    // let url = get_doc_id.getAttribute("data-url");
-    // console.log(url);
     $.ajax({
             type: "POST",
             url: url,
             data: {'video_id': $(this).attr('name'),'operation':'like_submit','csrfmiddlewaretoken': '{{ csrf_token }}'},
             dataType: "json",
             success: function(response) {
-                console.log("========================")
-                // console.log(typeof(response), "==================");
-                // console.log(response.liked, "liked value");
+                console.log(response);
                 selector = document.getElementsByName(response.video_id);
-                // console.log(r_selector);
-                // selector = $(r_selector).attr("class");
-                // console.log(selector);
-
                     if(response.liked==true){
-                        // $(selector).html("Liked")
-                        // $("name").css("background-color","green");
-                        $(selector).css("background-color","green");
-                        // $('name').html("Liked")
-                        // console.log(selector);
-                        // $(selector).css("color","black");
-                        // $(selector).css("color","blue");
+                        $(selector).css("background-color","#28a745");
+                        $(selector).html(`Liked(${response.like_count})`);
                     }
-                    else if(response["liked"]==false){
-                        // $("name").css("background-color","blue");
-                        $(selector).css("background-color","blue");
+                    else if(response.liked==false){
+                        $(selector).css("background-color","#007bff");
+                        $(selector).html(`Like(${response.like_count})`);
 
-                        // $(selector).html("Like")
-                        // $('name').html("Like")
-
-                        // $(selector).css("color","black");
                     }
 
                 },
             error: function (error){
-                console.log("----------------------------------------");
                 console.log(error);
         },
         
@@ -324,7 +196,39 @@ $('.likin').click(function(){
 
   })
 </script>
+
+<script>
+    //Dislike AJAX CALL
+    $('.disliking').click(function(){
+        let url = $(this).attr('data-url');
+        console.log(url);
+        $.ajax({
+                type: "POST",
+                url: url,
+                data: {'video_id': $(this).attr('name'),'operation':'dislike_submit','csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+                    selector = document.getElementsByName(response.video_id);
+                        if(response.disliked==true){
+                            $(selector).css("background-color","#dc3545");
+                            $(selector).html(`Disliked(${response.dislike_count})`);
+                        }
+                        else if(response.disliked==false){
+                            $(selector).css("background-color","#007bff");
+                            $(selector).html(`Dislike(${response.dislike_count})`);
     
+                        }
+    
+                    },
+                error: function (error){
+                    console.log(error);
+            },
+            
+            });
+    
+      })
+    </script>
 </body>
 
 

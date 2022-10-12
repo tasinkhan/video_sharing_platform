@@ -5,6 +5,7 @@ from .models import Video, Like, Dislike
 from users.models import User
 import sweetify
 import json
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -31,9 +32,9 @@ def video_details(request, id):
         print(video.added_by.email)
     return HttpResponse(request, )
 
+@login_required
 def like_video(request, id):
     if request.method == "POST":
-        liked = None
         video_obj = Video.objects.get(id = id)
         try:
             liked_obj = Like.objects.get(video = video_obj.id)
@@ -47,26 +48,30 @@ def like_video(request, id):
 
         if liked_obj:
             if request.user in video_obj.like.user.all():
-                print("--------------------------------")
                 video_obj.like.user.remove(request.user)
                 video_obj.save()
-                return HttpResponse(json.dumps({'liked':False, 'video_id':id}))
+                like_count = video_obj.like.user.count()
+                context = {'liked':False, 'video_id':f"{id}_like", "like_count":like_count}
+                return HttpResponse(json.dumps(context))
             
             else:
                 liked_obj.user.add(request.user)
+                like_count = video_obj.like.user.count()
                 if disliked_obj:
                     disliked_obj.user.remove(request.user)
-                return HttpResponse(json.dumps({'liked':True, 'video_id':id}))
+                context = {'liked':True, 'video_id':f"{id}_like", "like_count":like_count}
+                
+                return HttpResponse(json.dumps(context))
         else:
-            print("=====================")
-            
             like_obj = Like.objects.create(video = video_obj)
             like_obj.user.add(request.user)
+            like_count = video_obj.like.user.count()
             if disliked_obj:
                 disliked_obj.user.remove(request.user)
-            return HttpResponse(json.dumps({'liked':True, 'video_id':id}))
+            context = {'liked':True, 'video_id':f"{id}_like", "like_count":like_count}
+            return HttpResponse(json.dumps(context))
 
-
+@login_required
 def dislike_video(request, id):
     if request.method == "POST":
         video_obj = Video.objects.get(id = id)
@@ -85,13 +90,17 @@ def dislike_video(request, id):
                 print("--------------------------------")
                 video_obj.dislike.user.remove(request.user)
                 video_obj.save()
-                return HttpResponse("dislike removed")
+                dislike_count = video_obj.dislike.user.count()
+                context = {'disliked':False, 'video_id':f"{id}_dislike", "dislike_count":dislike_count}
+                return HttpResponse(json.dumps(context))
             
             else:
                 disliked_obj.user.add(request.user)
                 if liked_obj:
                     liked_obj.user.remove(request.user)
-                return HttpResponse("disliked")
+                dislike_count = video_obj.dislike.user.count()
+                context = {'disliked':True, 'video_id':f"{id}_dislike", "dislike_count":dislike_count}
+                return HttpResponse(json.dumps(context))
         else:
             print("=====================")
             
@@ -99,7 +108,9 @@ def dislike_video(request, id):
             dislike_obj.user.add(request.user)
             if liked_obj:
                 liked_obj.user.remove(request.user)
-            return HttpResponse("disliked")
+            dislike_count = video_obj.dislike.user.count()
+            context = {'disliked':True, 'video_id':f"{id}_dislike", "dislike_count":dislike_count}
+            return HttpResponse(json.dumps(context))
         
         
 
