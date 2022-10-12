@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'video',
-    'sweetify'
+    'sweetify',
+    'embed_video',
 ]
 
 AUTH_USER_MODEL = 'users.User'

@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from  embed_video.fields  import  EmbedVideoField
 # Create your models here.
 
 class Video(models.Model):
@@ -7,6 +8,7 @@ class Video(models.Model):
     url = models.URLField(max_length = 255)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True)
+    embded_video = EmbedVideoField(null = True, blank = True)
     # likes = models.ManyToManyField(User, related_name="video_like")
 
     def get_total_likes(self):
