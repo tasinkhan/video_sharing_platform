@@ -128,3 +128,4 @@ STATIC_URL = '/static/'
 # sweetify
 SWEETIFY_SWEETALERT_LIBRARY = 'sweetalert2'
 
+LOGIN_URL = "/users/login/"

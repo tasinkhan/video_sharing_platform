@@ -15,14 +15,11 @@ def registration_page(request):
 def login_view(request):
     if request.method == "POST":
         email = request.POST['email']
-        print(email)
         queryset = User.objects.get(email = email)
-        print(queryset)
         password = request.POST['password']
         if queryset:
             user = authenticate(request, email = email, password = password)
             if user is not None:
-                print(user, "=====================")
                 login(request,user)
                 sweetify.success(request, 'Login successful')
                 return redirect("users:dashboard")
@@ -37,7 +34,6 @@ def register_view(request):
         last_name = request.POST["last_name"]
         email = request.POST["email"]
         password = request.POST["password"]
-        print(password)
         try:
             queryset = User.objects.get(email = email)
         except:
@@ -66,9 +62,12 @@ def dashboard_view(request):
 
 def added_videos(request):
     try:
+        print(request.user)
         queryset = Video.objects.filter(added_by = request.user)
+        print(queryset)
     except:
         queryset = None
+        print(queryset)
     return render(request, "added_video_list.html", {"videos":queryset})
 
     

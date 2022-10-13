@@ -18,49 +18,33 @@ Video Sharing Platform
                     </div>                    
                     <label class="form-control label-warning text-xs-center">{{ video.title }}</label>
                     <div class="d-flex justify-content-center">
-                        <div class="details-div mr-2">
-                            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#videodetails_{{video.id}}">Details</button>
+                        <div class="details-div mt-1 mr-4">
+                            <a type="submit" class="btn btn-primary" data-toggle="modal" data-target="#videodetails_{{video.id}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
                         </div>
-                        <div class="like-div mr-2">
+                        <div class="like-div mr-4">
                             {% if request.user in video.like.user.all %}
-                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" class="liking btn btn-success" id="co">Liked({{ video.get_total_likes }})</a>
-                            <!-- <form method="POST" action="{% url 'video:like_video' video.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success">Liked({{ video.get_total_likes }})</button>
-                            </form> -->
-                            
+                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" style="font-size:30px;color: blue;" class="liking" id="co"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                            </a>
+                            <span class="like-no" style="font-size:30px;"> {{ video.like.user.count }} </span>
+                    
                             {% else %}
-                            {{ video.id }}
-                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" class="liking btn btn-primary" id="co">Like({{ video.get_total_likes }})</a>
-                            <!-- <form method="POST" action="{% url 'video:like_video' video.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Like({{ video.get_total_likes }})</button>
-                            </form> -->
+                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" style="font-size:30px;color: black;" class="liking" id="co"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                            </a>
+                            <span class="like-no" style="font-size:30px;"> {{ video.like.user.count }} </span>                            
                         
                         {% endif %}
                         </div>
-                        <div class="dislike-div mr-2">
+                        <div class="dislike-div mr-4">
                             {% if request.user in video.dislike.user.all %}
-                            <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" class="disliking btn btn-danger" id="co-3">Disliked({{ video.get_total_dislikes }})</a>
-                            <!-- <form method="POST" action="{% url 'video:dislike_video' video.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Disliked({{ video.get_total_dislikes }})</button>
-                            </form> -->
+                            <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" style="font-size:30px;color: blue;" class="disliking" id="co-1"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>
+                            <span class="dislike-no" style="font-size:30px;"> {{ video.dislike.user.count }} </span>
                             
                         {% else %}
-                        <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" class="disliking btn btn-primary" id="co-4">Dislike({{ video.get_total_dislikes }})</a>
-
-                            <!-- <form method="POST" action="{% url 'video:dislike_video' video.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Dislike({{ video.get_total_dislikes }})</button>
-                            </form> -->
+                        <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" style="font-size:30px;color: black;" class="disliking" id="co-1"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>
+                        <span class="dislike-no" style="font-size:30px;"> {{ video.dislike.user.count }} </span>
                             
                         {% endif %}
                         </div>
-                        <!-- <div>
-                            <i class="fa fa-thumbs-up" style="font-size:30px;color:black;"></i>
-                            {{ hello }}
-                        </div> -->
                     </div>
                     
                     
@@ -89,12 +73,12 @@ Video Sharing Platform
                     
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6 mb-4">
-                                        <h5>Like Count: {{ video.get_total_likes }}</h5>
+                                    <div  class="col-md-6 mb-4">
+                                        <h5 id="like-count">Like Count: {{ video.get_total_likes }}</h5>
                                     </div>
                 
-                                    <div class="col-md-6 mb-4">
-                                        <h5>Dislike Count: {{ video.get_total_dislikes }}</h5>
+                                    <div  class="col-md-6 mb-4">
+                                        <h5 id="dislike-count">Dislike Count: {{ video.get_total_dislikes }}</h5>
                                     </div>
                     
                                 </div>
@@ -147,7 +131,7 @@ Video Sharing Platform
         }
     
             .pb-video:hover {
-                background: #2c3e50;
+                background: #e6e6e6;
             }
     
         .pb-video-frame {
@@ -168,7 +152,8 @@ Video Sharing Platform
 // Like AJAX CALL
 $('.liking').click(function(){
     let url = $(this).attr('data-url');
-    console.log(url);
+    let loginUrl = "{% url 'users:login' %}";
+    
     $.ajax({
             type: "POST",
             url: url,
@@ -176,16 +161,30 @@ $('.liking').click(function(){
             dataType: "json",
             success: function(response) {
                 console.log(response);
-                selector = document.getElementsByName(response.video_id);
+                if (response.is_logged_in == true) {
+                    selector = document.getElementsByName(response.video_id);
+                    dislike_selector = document.getElementsByName(response.disliked_video_id);
+                    
                     if(response.liked==true){
-                        $(selector).css("background-color","#28a745");
-                        $(selector).html(`Liked(${response.like_count})`);
+                        $(selector).css("color","blue");
+                        $(selector).siblings("span.like-no").html(response.like_count);
+                        $(dislike_selector).css("color","black");
+                        $(dislike_selector).siblings("span.dislike-no").html(response.dislike_count);
                     }
                     else if(response.liked==false){
-                        $(selector).css("background-color","#007bff");
-                        $(selector).html(`Like(${response.like_count})`);
+                        $(selector).css("color","black");
+                        $(selector).siblings("span.like-no").html(response.like_count);
+                        $(dislike_selector).css("color","black");
+                        $(dislike_selector).siblings("span.dislike-no").html(response.dislike_count);
+                        
 
                     }
+                }
+                else {
+                    alert("You need to login first to like or dislike")
+                    location.href = loginUrl;
+                }
+                
 
                 },
             error: function (error){
@@ -201,6 +200,7 @@ $('.liking').click(function(){
     //Dislike AJAX CALL
     $('.disliking').click(function(){
         let url = $(this).attr('data-url');
+        let loginUrl = "{% url 'users:login' %}";
         console.log(url);
         $.ajax({
                 type: "POST",
@@ -209,16 +209,28 @@ $('.liking').click(function(){
                 dataType: "json",
                 success: function(response) {
                     console.log(response);
-                    selector = document.getElementsByName(response.video_id);
+                    if (response.is_logged_in == true) {
+                        selector = document.getElementsByName(response.video_id);
+                        like_selector = document.getElementsByName(response.liked_video_id);
                         if(response.disliked==true){
-                            $(selector).css("background-color","#dc3545");
-                            $(selector).html(`Disliked(${response.dislike_count})`);
+                            $(selector).css("color","blue");
+                            $(selector).siblings("span.dislike-no").html(response.dislike_count);
+                            $(like_selector).css("color","black");
+                            $(like_selector).siblings("span.like-no").html(response.like_count);
+
                         }
                         else if(response.disliked==false){
-                            $(selector).css("background-color","#007bff");
-                            $(selector).html(`Dislike(${response.dislike_count})`);
-    
+                            $(selector).css("color","black");
+                            $(selector).siblings("span.dislike-no").html(response.dislike_count);
+                            $(like_selector).css("color","black");
+                            $(like_selector).siblings("span.like-no").html(response.like_count);
+
                         }
+                    }
+                    else {
+                    alert("You need to login first to like or dislike")
+                    location.href = loginUrl;
+                }
     
                     },
                 error: function (error){
@@ -228,7 +240,7 @@ $('.liking').click(function(){
             });
     
       })
-    </script>
+</script>
 </body>
 
 
