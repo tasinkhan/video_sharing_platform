@@ -35,6 +35,7 @@ def video_details(request, id):
 # @login_required(login_url='/users/login/')
 def like_video(request, id):    
     if request.method == "POST":
+        print(request.POST)
         is_logged_in = False
         if request.user.is_authenticated:
             is_logged_in = True

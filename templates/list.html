@@ -23,12 +23,12 @@ Video Sharing Platform
                         </div>
                         <div class="like-div mr-4">
                             {% if request.user in video.like.user.all %}
-                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" style="font-size:30px;color: blue;" class="liking" id="co"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                            <a name="{{ video.id }}_like" vid-modal-id="{{video.id}}" data-url="{% url 'video:like_video' video.id %}" style="font-size:30px;color: blue;" class="liking" id="co"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
                             </a>
                             <span class="like-no" style="font-size:30px;"> {{ video.like.user.count }} </span>
                     
                             {% else %}
-                            <a name="{{ video.id }}_like" data-url="{% url 'video:like_video' video.id %}" style="font-size:30px;color: black;" class="liking" id="co"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                            <a name="{{ video.id }}_like" vid-modal-id="{{video.id}}" data-url="{% url 'video:like_video' video.id %}" style="font-size:30px;color: black;" class="liking" id="co"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
                             </a>
                             <span class="like-no" style="font-size:30px;"> {{ video.like.user.count }} </span>                            
                         
@@ -36,11 +36,11 @@ Video Sharing Platform
                         </div>
                         <div class="dislike-div mr-4">
                             {% if request.user in video.dislike.user.all %}
-                            <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" style="font-size:30px;color: blue;" class="disliking" id="co-1"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>
+                            <a name="{{ video.id }}_dislike" vid-modal-id="{{video.id}}" data-url="{% url 'video:dislike_video' video.id %}" style="font-size:30px;color: blue;" class="disliking" id="co-1"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>
                             <span class="dislike-no" style="font-size:30px;"> {{ video.dislike.user.count }} </span>
                             
                         {% else %}
-                        <a name="{{ video.id }}_dislike" data-url="{% url 'video:dislike_video' video.id %}" style="font-size:30px;color: black;" class="disliking" id="co-1"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>
+                        <a name="{{ video.id }}_dislike" vid-modal-id="{{video.id}}" data-url="{% url 'video:dislike_video' video.id %}" style="font-size:30px;color: black;" class="disliking" id="co-1"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>
                         <span class="dislike-no" style="font-size:30px;"> {{ video.dislike.user.count }} </span>
                             
                         {% endif %}
@@ -74,11 +74,11 @@ Video Sharing Platform
                                 </div>
                                 <div class="row">
                                     <div  class="col-md-6 mb-4">
-                                        <h5 id="like-count">Like Count: {{ video.get_total_likes }}</h5>
+                                        <h5 id="like-count-{{video.id}}">Like Count: {{ video.get_total_likes }}</h5>
                                     </div>
                 
                                     <div  class="col-md-6 mb-4">
-                                        <h5 id="dislike-count">Dislike Count: {{ video.get_total_dislikes }}</h5>
+                                        <h5 id="dislike-count-{{video.id}}">Dislike Count: {{ video.get_total_dislikes }}</h5>
                                     </div>
                     
                                 </div>
@@ -111,6 +111,8 @@ Video Sharing Platform
                         </div>
                     </div>                    
                 </div>
+                {% empty %}
+                <h3 >Sorry no video found</h3>
                 {% endfor %}
             </div> 
         </div>
@@ -151,6 +153,9 @@ Video Sharing Platform
 <script>
 // Like AJAX CALL
 $('.liking').click(function(){
+    let vidId = $(this).attr('vid-modal-id');
+    let likedVidId = `like-count-${vidId}`;
+    let dislikedVidId = `dislike-count-${vidId}`;
     let url = $(this).attr('data-url');
     let loginUrl = "{% url 'users:login' %}";
     
@@ -170,12 +175,19 @@ $('.liking').click(function(){
                         $(selector).siblings("span.like-no").html(response.like_count);
                         $(dislike_selector).css("color","black");
                         $(dislike_selector).siblings("span.dislike-no").html(response.dislike_count);
+                        document.getElementById(likedVidId).innerHTML = `Like Count: ${response.like_count}`;
+                        document.getElementById(dislikedVidId).innerHTML = `Dislike Count: ${response.dislike_count}`;
+
                     }
                     else if(response.liked==false){
                         $(selector).css("color","black");
                         $(selector).siblings("span.like-no").html(response.like_count);
                         $(dislike_selector).css("color","black");
                         $(dislike_selector).siblings("span.dislike-no").html(response.dislike_count);
+                        document.getElementById(likedVidId).innerHTML = `Like Count: ${response.like_count}`;
+                        document.getElementById(dislikedVidId).innerHTML = `Dislike Count: ${response.dislike_count}`;
+
+
                         
 
                     }
@@ -199,8 +211,12 @@ $('.liking').click(function(){
 <script>
     //Dislike AJAX CALL
     $('.disliking').click(function(){
+        let vidId = $(this).attr('vid-modal-id');
+        let likedVidId = `like-count-${vidId}`;
+        let dislikedVidId = `dislike-count-${vidId}`;
         let url = $(this).attr('data-url');
         let loginUrl = "{% url 'users:login' %}";
+        console.log("dddd",$(this).attr('name'));
         console.log(url);
         $.ajax({
                 type: "POST",
@@ -217,6 +233,9 @@ $('.liking').click(function(){
                             $(selector).siblings("span.dislike-no").html(response.dislike_count);
                             $(like_selector).css("color","black");
                             $(like_selector).siblings("span.like-no").html(response.like_count);
+                            document.getElementById(likedVidId).innerHTML = `Like Count: ${response.like_count}`;
+                            document.getElementById(dislikedVidId).innerHTML = `Dislike Count: ${response.dislike_count}`;
+
 
                         }
                         else if(response.disliked==false){
@@ -224,6 +243,10 @@ $('.liking').click(function(){
                             $(selector).siblings("span.dislike-no").html(response.dislike_count);
                             $(like_selector).css("color","black");
                             $(like_selector).siblings("span.like-no").html(response.like_count);
+                            document.getElementById(dislikedVidId).innerHTML = `Dislike Count: ${response.dislike_count}`;
+                            document.getElementById(likedVidId).innerHTML = `Like Count: ${response.like_count}`;
+
+
 
                         }
                     }
