@@ -1,5 +1,12 @@
 # video_sharing_platform
 
+# Features
+1. User registration
+2. User login
+3. Dashboard for user along with added video list
+4. User can add embded youtube video urls to play video using youtube player
+5. Like, Dislike video(login required). 
+
 ## Setup
 
 The first thing to do is to clone the repository:
